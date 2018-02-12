@@ -1,0 +1,23 @@
+---
+- hosts: app_Servers
+
+  tasks:
+    - name: install libunwind
+      yum: name=libunwind state=present
+      become: true
+
+    - name: install libicu
+      yum: name=libicu state=present
+      become: true
+
+  roles:
+    - role: daemonized.app
+      vars:
+        app_service_job: core_api_d
+        app_start: ./CoreApi
+        app_port: 5000
+        app_folder: /home/ec2-user/CoreApi
+        archive_path: ./../CoreApi/bin/Release/netcoreapp2.0/linux-x64/publish.zip
+        aspnetcore_environment: Development
+
+

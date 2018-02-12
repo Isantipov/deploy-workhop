@@ -12,4 +12,4 @@ env ASPNETCORE_ENVIRONMENT={{ aspnetcore_environment }}
 env ASPNETCORE_URLS="http://*:{{ app_port }}"
 
 exec su -s /bin/sh -c 'exec "$0" "$@"' ec2-user -- {{ app_start }} \
-    2>>stderr.log
+    >outstreams.log 2>&1
