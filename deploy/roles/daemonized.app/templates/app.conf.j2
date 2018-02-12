@@ -1,0 +1,15 @@
+start on runlevel [2345]
+stop on runlevel [016]
+
+respawn
+# sleep 5 seconds when stoped to ensure job doesn't hit respawn rate limit 
+# (such jobs are kicked out by upstart with 'respawning too fast, stopped' reason)
+post-stop exec sleep 5 
+
+chdir {{ app_folder }}  #deployment directory
+
+env ASPNETCORE_ENVIRONMENT={{ aspnetcore_environment }}
+env ASPNETCORE_URLS="http://*:{{ app_port }}"
+
+exec su -s /bin/sh -c 'exec "$0" "$@"' ec2-user -- {{ app_start }} \
+    2>>stderr.log

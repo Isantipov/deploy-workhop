@@ -1,0 +1,21 @@
+  - name: removes directory
+    file: 
+      path: "{{app_folder}}"
+      state: absent
+
+  - name: Creates directory
+    file: path="{{app_folder}}" state=directory
+
+  - unarchive:
+      src: "{{archive_path}}"
+      dest: "{{app_folder}}"
+      remote_src: False
+
+  - name: Changing permission of "{{app_folder}}/{{app_start}}", adding "+x"
+    file: dest="{{app_folder}}/{{app_start}}" mode=a+x
+
+  - name: Copy appsettings.{{aspnetcore_environment}}.json
+    template:
+      src: appsettings.json
+      dest: "{{app_folder}}/appsettings.{{aspnetcore_environment}}.json"
+    no_log: true

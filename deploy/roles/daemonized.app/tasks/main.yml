@@ -1,0 +1,39 @@
+#  vars:
+    # app_service_job: api_mylage_d
+    # app_start: ./Exp.Mylage.Reports.Api
+    # app_port: 5001
+    # app_folder: /home/ec2-user/Exp.Mylage.Reports.Api
+    # archive_path: ./../src/Exp.Mylage.Reports.Api/bin/Release/netcoreapp2.0/linux-x64/publish.zip
+    # env: mylage_Staging
+    # delay_timeout: 5
+    # wait_timeout: 5
+
+- name: stop {{app_service_job}} service job
+  service: name={{app_service_job}} state=stopped
+  # todo: change to detection later
+  ignore_errors: True
+  become: true
+
+- name: Kill legacy app 
+  command: "pkill -f '{{app_start}}'"
+  ignore_errors: True
+
+- include: copy.app.artifacts.yml
+
+- name: Copy service job config file. ({{app_service_job}}.conf)
+  template:
+    src: "app.conf.j2"
+    dest: /etc/init/{{app_service_job}}.conf
+    force: yes
+  become: true
+
+- name: start {{app_service_job}} job
+  service: name={{app_service_job}} state=started
+  become: true
+
+- name: Wait for app on {{app_port}}
+  wait_for:
+    port: "{{app_port}}"
+    delay: "{{delay_timeout|default(5)}}"
+    timeout: "{{wait_timeout|default(100)}}"
+
