@@ -20,7 +20,7 @@ namespace CoreApi.Controllers
         [HttpGet("{id}")]
         public string Get(int id)
         {
-            return "value";
+            return $"hello from {id}";
         }
 
         // POST api/values
